@@ -38,3 +38,24 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Payment(models.Model):
+    PAYMENT_TYPE = [
+        ('1', 'cach'),
+        ('2', 'non-cach'),
+    ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='пользователь')
+    date = models.DateField(verbose_name='дата платежа')
+    paid_course = models.ForeignKey(Course, on_delete=models.SET_NULL, **NULLABLE, verbose_name='оплаченный курс')
+    paid_lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, **NULLABLE, verbose_name='оплаченный урок')
+    amount = models.IntegerField(verbose_name='сумма платежа')
+    payment_type = models.CharField(max_length=1, choices=PAYMENT_TYPE, verbose_name='тип платежа')
+
+    class Meta:
+        verbose_name = 'оплата'
+        verbose_name_plural = 'оплаты'
+        ordering = ('user', )
+
+    def __str__(self):
+        return f'{self.user} - {self.date}: {self.amount}'
