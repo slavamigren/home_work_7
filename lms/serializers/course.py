@@ -15,8 +15,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class CourseLessonsAmountSerializer(serializers.ModelSerializer):
     """Сериализирует все поля объекта модели Course и добавляет количество уроков в курсе"""
-    lessons_amount = serializers.IntegerField(source='lesson_set.all.count')
-    lessons = LessonSerializer(source='lesson_set', many=True)
+    lessons_amount = serializers.IntegerField(source='lesson.all.count')
+    lessons = LessonSerializer(source='lesson', many=True)
 
 
     class Meta:

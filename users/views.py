@@ -1,7 +1,18 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from users.models import User
-from users.serializers import UserSerializer, UserPaymentsSerializer
+from users.permissions import IsOwner
+from users.serializers import UserSerializer, UserPaymentsSerializer, CreateUserSerializer, NotUsersProfileSerializer
+
+#  create доступен всем желающим, иначе никто не сможет зарегистрироваться
+PERMISSIONS_DICT = {
+    'list': [IsAuthenticated],
+    'retrieve': [IsAuthenticated],
+    'update': [IsAuthenticated, IsOwner],
+    'partial_update': [IsAuthenticated, IsOwner],
+    'destroy': [IsAuthenticated, IsOwner]
+}
 
 
 class UserViewSet(ModelViewSet):
@@ -9,9 +20,21 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     default_serializer = UserSerializer
     serializers = {
-        'list': UserPaymentsSerializer,
-        'retrieve': UserPaymentsSerializer,
+        'list': NotUsersProfileSerializer,
+        'retrieve_owners': UserPaymentsSerializer,
+        'retrieve_not_owners': NotUsersProfileSerializer,
+        'create': CreateUserSerializer,
     }
 
     def get_serializer_class(self):
+        """Выбирает сериализатор для экшна"""
+        if self.action == 'retrieve':
+            if self.request.user == self.get_object():
+                return self.serializers.get('retrieve_owners')
+            else:
+                return self.serializers.get('retrieve_not_owners')
         return self.serializers.get(self.action, self.default_serializer)
+
+    def get_permissions(self):
+        """Выбирает permission в соответствии с методом"""
+        return [permission() for permission in PERMISSIONS_DICT[self.action]]
