@@ -14,5 +14,5 @@ class PaymentViewSet(ListAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ('paid_course', 'paid_lesson', 'payment_type')
     ordering_fields = ('date',)
-    permission_classes = [IsAuthenticated]
+#    permission_classes = [IsAuthenticated]
 

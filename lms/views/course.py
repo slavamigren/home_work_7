@@ -2,17 +2,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course
-from lms.permissions import IsModerator, IsOwner
+from lms.paginators import Paginator
+from lms.permissions import IsModerator, IsOwner, IsStudent
 from lms.serializers.course import CourseSerializer, CourseLessonsAmountSerializer
 from users.models import UserRoles
 
+
 PERMISSIONS_DICT = {
-    'list': [IsAuthenticated, IsModerator | IsOwner],
-    'create': [IsAuthenticated, IsOwner],
-    'retrieve': [IsAuthenticated, IsModerator | IsOwner],
-    'update': [IsAuthenticated, IsModerator | IsOwner],
-    'partial_update': [IsAuthenticated, IsModerator | IsOwner],
-    'destroy': [IsAuthenticated, IsOwner]
+    'list': [IsModerator | IsOwner | IsStudent],
+    'create': [IsOwner],
+    'retrieve': [IsModerator | IsOwner | IsStudent],
+    'update': [IsModerator | IsOwner],
+    'partial_update': [IsModerator | IsOwner],
+    'destroy': [IsOwner]
 }
 
 
@@ -20,7 +22,8 @@ class CourseViewSet(ModelViewSet):
     """Контроллер курсов"""
     queryset = Course.objects.all()
     default_serializer = CourseSerializer
-    permission_classes = [IsAuthenticated]
+#    permission_classes = [IsAuthenticated]
+    pagination_class = Paginator
     serializers = {
         'list': CourseLessonsAmountSerializer,
         'retrieve': CourseLessonsAmountSerializer,
@@ -36,7 +39,7 @@ class CourseViewSet(ModelViewSet):
     def get_queryset(self):
         """Модераторам показывает все курсы, мемберам - только их"""
         queryset = super().get_queryset()
-        if self.request.user.role == UserRoles.MODERATOR:
+        if self.request.user.role == UserRoles.MODERATOR or self.request.user.role == UserRoles.STUDENT:
             return queryset
         return queryset.filter(owner=self.request.user)
 

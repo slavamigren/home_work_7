@@ -1,4 +1,4 @@
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet
 
 from users.models import User
@@ -7,11 +7,12 @@ from users.serializers import UserSerializer, UserPaymentsSerializer, CreateUser
 
 #  create доступен всем желающим, иначе никто не сможет зарегистрироваться
 PERMISSIONS_DICT = {
-    'list': [IsAuthenticated],
-    'retrieve': [IsAuthenticated],
-    'update': [IsAuthenticated, IsOwner],
-    'partial_update': [IsAuthenticated, IsOwner],
-    'destroy': [IsAuthenticated, IsOwner]
+    'list': [],
+    'retrieve': [],
+    'update': [IsOwner],
+    'partial_update': [IsOwner],
+    'destroy': [IsOwner],
+    'create': [AllowAny]
 }
 
 

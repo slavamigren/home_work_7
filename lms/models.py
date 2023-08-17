@@ -59,3 +59,18 @@ class Payment(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.date}: {self.amount}'
+
+
+class Subscription(models.Model):
+    """Подписка для студента на обновление курса"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  **NULLABLE,
+                             verbose_name='пользователь', related_name='subscription')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='курс', related_name='subscription')
+
+    class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
+        unique_together = ('user', 'course')
+
+    def __str__(self):
+        return f'{self.user} - {self.course}'
