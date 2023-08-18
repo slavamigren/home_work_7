@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'lms',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_yasg',
 
 ]
 
@@ -153,3 +154,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+STRIPE_AUTH = os.getenv("stripe")

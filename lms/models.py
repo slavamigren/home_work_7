@@ -12,6 +12,7 @@ class Course(models.Model):
     description = models.TextField(**NULLABLE, verbose_name='описание курса')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
                               verbose_name='пользователь')
+    price = models.SmallIntegerField(default=1000, verbose_name='стоимость курса')
 
     class Meta:
         verbose_name ='курс'

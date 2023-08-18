@@ -1,10 +1,9 @@
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course
 from lms.paginators import Paginator
 from lms.permissions import IsModerator, IsOwner, IsStudent
-from lms.serializers.course import CourseSerializer, CourseLessonsAmountSerializer
+from lms.serializers.course import CourseSerializer, CourseListSerializer, CourseRetrieveSerializer
 from users.models import UserRoles
 
 
@@ -22,11 +21,10 @@ class CourseViewSet(ModelViewSet):
     """Контроллер курсов"""
     queryset = Course.objects.all()
     default_serializer = CourseSerializer
-#    permission_classes = [IsAuthenticated]
     pagination_class = Paginator
     serializers = {
-        'list': CourseLessonsAmountSerializer,
-        'retrieve': CourseLessonsAmountSerializer,
+        'list': CourseListSerializer,
+        'retrieve': CourseRetrieveSerializer,
     }
 
     def get_serializer_class(self):
