@@ -5,13 +5,13 @@ from lms.models import Course, Lesson, Payment, Subscription
 
 @admin.register(Course)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title')
+    list_display = ('pk', 'title', 'last_update_time')
     search_fields = ('title',)
 
 
 @admin.register(Lesson)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title')
+    list_display = ('pk', 'title',)
     search_fields = ('title',)
 
 

@@ -13,6 +13,8 @@ class Course(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
                               verbose_name='пользователь')
     price = models.SmallIntegerField(default=1000, verbose_name='стоимость курса')
+    update_flag = models.BooleanField(default=True, verbose_name='объект изменён')
+    last_update_time = models.DateTimeField(auto_now=True, verbose_name='последнее обновление')
 
     class Meta:
         verbose_name ='курс'

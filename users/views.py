@@ -1,9 +1,11 @@
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
 from users.permissions import IsOwner
-from users.serializers import UserSerializer, UserPaymentsSerializer, CreateUserSerializer, NotUsersProfileSerializer
+from users.serializers import UserSerializer, UserPaymentsSerializer, CreateUserSerializer, NotUsersProfileSerializer, \
+    MyTokenObtainPairSerializer
 
 #  create доступен всем желающим, иначе никто не сможет зарегистрироваться
 PERMISSIONS_DICT = {
@@ -39,3 +41,9 @@ class UserViewSet(ModelViewSet):
     def get_permissions(self):
         """Выбирает permission в соответствии с методом"""
         return [permission() for permission in PERMISSIONS_DICT[self.action]]
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    """Переопределяет контроллер для получения токена, чтобы каждый раз обновлялась
+    запись в last_login"""
+    serializer_class = MyTokenObtainPairSerializer

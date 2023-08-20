@@ -1,6 +1,12 @@
-import requests
+from datetime import datetime, timedelta
 
-from conf.settings import STRIPE_AUTH
+import requests
+from django.core.mail import send_mail
+
+from conf import settings
+from conf.settings import STRIPE_AUTH, NOTIFICATION_TIME
+from lms.models import Course, Lesson
+from users.models import User
 
 
 def get_payment_url(product, price):
@@ -31,5 +37,33 @@ def get_payment_url(product, price):
     response = requests.request('POST', 'https://api.stripe.com/v1/checkout/sessions', headers=headers, data=data)
     return response.json()['url']
 
-# if __name__ == '__main__':
-#     print(get_url_payment('course', 1000))
+def send_update_notification():
+    """Просматривает все уроки на признак обновления и истечение периода времени до рассылки"""
+    current_time = datetime.now()
+    notification_timedelta = timedelta(hours=NOTIFICATION_TIME)
+    courses = Course.objects.all()
+    for course in courses:
+        if course.update_flag:# and current_time - course.last_update_time > notification_timedelta:
+            mailing_list = [subscription.user.email for subscription in course.subscription.all()]
+            send_mail(
+                f'Обновление в курсе {course.title}',
+                f'Обновление в курсе {course.title}',
+                settings.EMAIL_HOST_USER,
+                mailing_list
+            )
+            updated_course = Course.objects.get(pk=course.pk)
+            updated_course.update_flag = False
+            updated_course.save(update_fields=['update_flag'])
+
+
+def check_users():
+    """Проверяет last_login всех пользователей в Users, если большее 30 дней
+     переводит в неактивные"""
+    current_time = datetime.now()
+    users = User.objects.all()
+    inactive_timedelta = timedelta(days=30)
+    for user in users:
+        if current_time - user.last_login > inactive_timedelta:
+            inactive_user = User.objects.get(pk=user.pk)
+            inactive_user.is_active = True
+            inactive_user.save(update_fields=['is_active'])

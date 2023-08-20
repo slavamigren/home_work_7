@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os, dotenv
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'drf_yasg',
+    'django_celery_beat'
 
 ]
 
@@ -121,7 +122,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False  # использовать в моделях текущий часовой пояс
 
 
 # Static files (CSS, JavaScript, Images)
@@ -155,4 +156,47 @@ REST_FRAMEWORK = {
     ]
 }
 
-STRIPE_AUTH = os.getenv("stripe")
+STRIPE_AUTH = os.getenv("stripe")  # для авторизации в сервисе stripe.com
+
+# Настройки для Celery
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Например, Redis, который по умолчанию работает на порту 6379
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = "Europe/Moscow"
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Настройки для рассылки писем
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
+
+# Через какое время извещать об обновлении курса в часах
+NOTIFICATION_TIME = 4
+
+#Настройки для Celery
+# CELERY_BEAT_SCHEDULE = {
+#     'update_notification': {
+#         'task': 'lms.tasks.update_notification',  # Путь к задаче
+#         'schedule': timedelta(minutes=1),  # Расписание выполнения задачи (например, каждые 1 минут)
+#     },
+# }
+ # celery -A conf worker -l info -S django
+ # celery -A conf beat -l info -S django
+
+
+#celery -A conf worker -l INFO -P eventlet
+# celery -A conf beat -l info -S django

@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from lms.serializers.payment import PaymentSerializer
 from users.models import User
@@ -41,3 +44,16 @@ class CreateUserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Переопределяет сериализатор для получения токена, чтобы каждый раз обновлялась
+    запись в last_login"""
+    def validate(self, attrs):
+        # implement your logic here
+        data = super().validate(attrs)
+        user_obj = User.objects.filter(email=self.user.email)[0]
+        if user_obj:
+            user_obj.last_login = datetime.now()
+            user_obj.save()
+        return data
