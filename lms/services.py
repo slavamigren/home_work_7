@@ -43,7 +43,7 @@ def send_update_notification():
     notification_timedelta = timedelta(hours=NOTIFICATION_TIME)
     courses = Course.objects.all()
     for course in courses:
-        if course.update_flag:# and current_time - course.last_update_time > notification_timedelta:
+        if course.update_flag and current_time - course.last_update_time > notification_timedelta:
             mailing_list = [subscription.user.email for subscription in course.subscription.all()]
             send_mail(
                 f'Обновление в курсе {course.title}',
