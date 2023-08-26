@@ -84,12 +84,20 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv("database"),
+#         'USER': os.getenv("user"),
+#         'PASSWORD': os.getenv("password"),
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("database"),
-        'USER': os.getenv("user"),
-        'PASSWORD': os.getenv("password"),
+        'NAME': 'lms',
+        'USER': 'postgres',
     }
 }
 
@@ -194,8 +202,7 @@ NOTIFICATION_TIME = 4
 #         'schedule': timedelta(minutes=1),  # Расписание выполнения задачи (например, каждые 1 минут)
 #     },
 # }
- # celery -A conf worker -l info -S django
- # celery -A conf beat -l info -S django
+
 
 
 #celery -A conf worker -l INFO -P eventlet
