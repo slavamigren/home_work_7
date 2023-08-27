@@ -92,6 +92,7 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 #         'PASSWORD': os.getenv("password"),
 #     }
 # }
+#
 
 DATABASES = {
     'default': {
