@@ -1,0 +1,21 @@
+stages:
+  - test
+
+test:
+  tags:
+    - main
+  stage: test
+  before_script:
+    - pip install -r requirements.txt
+
+  variables:
+    POSTGRES_DB: lms
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: ""
+
+  services:
+    - postgres:14
+
+  script:
+    - python manage.py migrate
+    - python manage.py test
